@@ -12,7 +12,7 @@ export const loginSchema = z.object({
 });
 
 export const registerSchema = z.object({
-  name: z
+  username: z
     .string("Заполните это поле")
     .min(4, "Минимальный размер имени - 4 символа")
     .max(15, "Максимальный размер имени - 15 символов"),

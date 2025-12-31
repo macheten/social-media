@@ -6,17 +6,36 @@ import { UserPen } from "lucide-react";
 import React from "react";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { ValidationMessage } from "../validation-message";
+import { register } from "@/src/app/actions/auth/register";
+import toast from "react-hot-toast";
 
 export const RegisterForm: React.FC = () => {
   const initialValues = {
-    name: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   };
 
-  const onSubmit = (data: typeof initialValues) => {
-    console.log(data);
+  const onSubmit = async (data: typeof initialValues) => {
+    try {
+      const res = await register(data);
+
+      if (res.success) {
+        toast.success(res.message, {
+          duration: 4000,
+        });
+      } else {
+        toast.error(res.message, {
+          duration: 4000,
+        });
+      }
+    } catch (error) {
+      toast.error("Что-то пошло не так. Попробуйте снова", {
+        duration: 4000,
+      });
+      console.error(error)
+    }
   };
   return (
     <Formik
@@ -28,12 +47,12 @@ export const RegisterForm: React.FC = () => {
         <div className='flex flex-col'>
           <div className='flex flex-col mb-5'>
             <Field
-              name='name'
+              name='username'
               placeholder='Имя пользователя'
               as={Input}
               className='mb-2'
             />
-            <ValidationMessage name='name' />
+            <ValidationMessage name='username' />
             <Field
               name='email'
               placeholder='Введите почту'

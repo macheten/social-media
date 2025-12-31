@@ -8,10 +8,10 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  name     String
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String?
+  username String
   role     UserRole @default(USER)
 
   provider   String?
@@ -19,16 +19,29 @@ model User {
   activated  Boolean @default(false)
   postItems  Post[]
 
+  verificationCode VerificationCode?
+
   createdAt DateTime @default(now())
 }
 
 model Post {
-  id Int @id @default(autoincrement())
-  title String
+  id      String @id @default(uuid())
+  title   String
   content String
 
-  author User @relation(fields: [authorId], references: [id])
-  authorId Int @unique
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String @unique
+
+  createdAt DateTime @default(now())
+}
+
+model VerificationCode {
+  id     String @id @default(uuid())
+  code   String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  createdAt DateTime @default(now())
 }
 
 enum UserRole {

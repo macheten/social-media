@@ -8,8 +8,16 @@ import { LogIn } from "lucide-react";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { loginSchema } from "@shared/schemas/forms/auth-schemas";
 import { ValidationMessage } from "../validation-message";
+import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
+import googleIcon from "@/public/icons/google-icon.svg";
+import Image from "next/image";
 
-export const LoginForm: React.FC = () => {
+interface Props {
+  closeModal: () => void;
+}
+
+export const LoginForm: React.FC<Props> = ({ closeModal }) => {
   const initialValues = {
     email: "",
     password: "",
@@ -17,6 +25,18 @@ export const LoginForm: React.FC = () => {
 
   const onSubmit = (data: typeof initialValues) => {
     console.log(data);
+    signIn("credentials", {
+      redirect: false,
+      password: data.password,
+      email: data.email,
+    }).then((res) => {
+      if (res?.ok) {
+        toast.success("Вы вошли в аккаунт!");
+        closeModal();
+      } else {
+        toast.error("Не удалось войти");
+      }
+    });
   };
   return (
     <Formik
@@ -26,7 +46,7 @@ export const LoginForm: React.FC = () => {
     >
       <Form>
         <div className='flex flex-col justify-center'>
-          <div className='mb-5'>
+          <div className='mb-3.5'>
             <div className='mb-2'>
               <Field
                 name='email'
@@ -45,6 +65,12 @@ export const LoginForm: React.FC = () => {
               />
               <ValidationMessage name='password' />
             </div>
+          </div>
+          <div className="mb-5">
+            <Button type='button' onClick={() => signIn('google')} variant={"outline"}>
+              <Image width={20} height={20} src={googleIcon} alt="google" />
+              Войти с Google
+            </Button>
           </div>
           <Button
             className='flex items-center self-center w-1/2'

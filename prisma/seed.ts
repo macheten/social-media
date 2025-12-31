@@ -6,17 +6,18 @@ async function up() {
   await prisma.user.createMany({
     data: [
       {
-        id: 1,
+        activated: true,
         email: "user@test.com",
-        name: "user",
+        username: "user",
         password: hashSync("user", 10),
       },
 
       {
-        id: 2,
+        activated: true,
         email: "admin@test.com",
-        name: "admin",
+        username: "admin",
         password: hashSync("admin", 10),
+        role: 'ADMIN'
       },
     ],
   });
@@ -26,6 +27,8 @@ async function up() {
 // зачищает таблицы в базе данных
 async function down() {
   await prisma.user.deleteMany();
+  await prisma.verificationCode.deleteMany();
+  await prisma.post.deleteMany();
 }
 
 async function main() {

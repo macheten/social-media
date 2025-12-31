@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Nunito, Roboto } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
-import { Header } from "@shared/components/shared/Header";
+import { Header } from "@shared/components/shared/header";
+import { Providers } from "@shared/components/shared/providers";
 
 // const nunito = Nunito({
 //   variable: "--font-nunito",
@@ -10,7 +11,7 @@ import { Header } from "@shared/components/shared/Header";
 
 const roboto = Roboto({
   variable: "--font-roboto",
-  subsets: ['latin', 'cyrillic']
+  subsets: ["latin", "cyrillic"],
 });
 
 export const metadata: Metadata = {
@@ -24,11 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body
-        className={`${roboto.className}`}
-      >
-        <Header />
-        {children}
+      <body className={`${roboto.className}  min-h-screen`}>
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );
