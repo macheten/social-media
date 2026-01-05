@@ -2,9 +2,9 @@
 
 import React from "react";
 import { Button } from "@shared/components/ui/button";
-import { LogIn, User } from "lucide-react";
+import { LogIn, LogOut, User } from "lucide-react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface Props {
   className?: string;
@@ -13,22 +13,28 @@ interface Props {
 
 export const AuthButton: React.FC<Props> = ({ className, onClick }) => {
   const { data: session, status } = useSession();
-  
-  if (status === 'loading') {
-    return <Button loading className='mr-2 w-27' />
+
+  if (status === "loading") {
+    return <Button loading className='mr-2 w-27' />;
   }
 
   return (
     <>
       {session?.user ? (
-        <Link href={"/profile"}>
-          <Button className='mr-2'>
-            <User />
-            Профиль
+        <div>
+          <Link href={"/profile"}>
+            <Button className='mr-2'>
+              <User />
+              Профиль
+            </Button>
+          </Link>
+          <Button onClick={() => signOut()} variant={'outline'}>
+            <LogOut  />
+            Выйти
           </Button>
-        </Link>
+        </div>
       ) : (
-        <Button onClick={onClick} className='mr-2'>
+        <Button onClick={onClick}>
           <LogIn />
           Войти
         </Button>

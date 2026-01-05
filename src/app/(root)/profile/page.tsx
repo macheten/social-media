@@ -1,26 +1,34 @@
-import { Container } from "@shared/components/shared/Container";
 import { ProfileInfo } from "@shared/components/shared/profile/profile-info";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 
-export default async function ProfilePage() {
-  const session = await getServerSession(authOptions)
+interface PageProps {
+  searchParams: Promise<{
+    userId: string | undefined
+  }>
+}
 
-  if (!session?.user) {
-    return redirect('/')
+export default async function ProfilePage({ searchParams }: PageProps) {
+  const [ session, { userId } ] = await Promise.all([getServerSession(authOptions), searchParams])
+  let profileId = null
+  let isProfileOwner = false
+
+  if (!session && !userId) {
+    return redirect("/");
   }
 
-  console.log(session)
+  if (session?.user.id && userId) {
+    profileId = userId
+    isProfileOwner = session?.user.id === userId ? true : false 
+  } else {
+    profileId = session?.user.id
+    isProfileOwner = true
+  }
+
   return (
-    <Container>
-      {session.user.email}
-      <br />
-      {session.user.name}
-      <br />
-      {/* @ts-ignore */}
-      {session.user.role}
-      <ProfileInfo />
-    </Container>
+    <div>
+      <ProfileInfo userId={profileId as string} isProfileOwner={isProfileOwner} />
+    </div>
   );
 }

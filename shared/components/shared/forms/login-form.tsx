@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Field, Form, Formik } from "formik";
 import { Input } from "@shared/components/ui/input";
 import { Button } from "@shared/components/ui/button";
@@ -18,25 +18,33 @@ interface Props {
 }
 
 export const LoginForm: React.FC<Props> = ({ closeModal }) => {
+  const [loading, setLoading] = useState(false);
   const initialValues = {
     email: "",
     password: "",
   };
 
-  const onSubmit = (data: typeof initialValues) => {
-    console.log(data);
-    signIn("credentials", {
-      redirect: false,
-      password: data.password,
-      email: data.email,
-    }).then((res) => {
-      if (res?.ok) {
-        toast.success("Вы вошли в аккаунт!");
-        closeModal();
-      } else {
-        toast.error("Не удалось войти");
-      }
-    });
+  const onSubmit = async (data: typeof initialValues) => {
+    try {
+      setLoading(true)
+      await signIn("credentials", {
+        redirect: false,
+        password: data.password,
+        email: data.email,
+      }).then((res) => {
+        if (res?.ok) {
+          toast.success("Вы вошли в аккаунт!");
+          closeModal();
+        } else {
+          toast.error("Не удалось войти");
+        }
+      });
+    } catch (error) {
+      console.error(error)
+      toast.error("Не удалось войти");
+    } finally {
+      setLoading(false)
+    }
   };
   return (
     <Formik
@@ -66,13 +74,18 @@ export const LoginForm: React.FC<Props> = ({ closeModal }) => {
               <ValidationMessage name='password' />
             </div>
           </div>
-          <div className="mb-5">
-            <Button type='button' onClick={() => signIn('google')} variant={"outline"}>
-              <Image width={20} height={20} src={googleIcon} alt="google" />
+          <div className='mb-5'>
+            <Button
+              type='button'
+              onClick={() => signIn("google")}
+              variant={"outline"}
+            >
+              <Image width={20} height={20} src={googleIcon} alt='google' />
               Войти с Google
             </Button>
           </div>
           <Button
+            loading={loading}
             className='flex items-center self-center w-1/2'
             size={"lg"}
             type='submit'

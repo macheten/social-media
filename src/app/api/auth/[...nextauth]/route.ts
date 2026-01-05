@@ -112,6 +112,7 @@ export const authOptions: AuthOptions = {
 
       if (foundUser) {
         token.role = foundUser.role;
+        token.id = foundUser.id
       }
       return token;
     },
@@ -120,6 +121,7 @@ export const authOptions: AuthOptions = {
       session.user.email = token.email;
       session.user.name = token.name;
       session.user.role = token.role;
+      session.user.id = token.id;
 
       return session;
     },

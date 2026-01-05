@@ -3,13 +3,14 @@ import { Input } from "@shared/components/ui/input";
 import { registerSchema } from "@shared/schemas/forms/auth-schemas";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { UserPen } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { ValidationMessage } from "../validation-message";
 import { register } from "@/src/app/actions/auth/register";
 import toast from "react-hot-toast";
 
 export const RegisterForm: React.FC = () => {
+  const [loading, setLoading] = useState(false)
   const initialValues = {
     username: "",
     email: "",
@@ -19,6 +20,7 @@ export const RegisterForm: React.FC = () => {
 
   const onSubmit = async (data: typeof initialValues) => {
     try {
+      setLoading(true)
       const res = await register(data);
 
       if (res.success) {
@@ -35,6 +37,8 @@ export const RegisterForm: React.FC = () => {
         duration: 4000,
       });
       console.error(error)
+    } finally {
+      setLoading(false)
     }
   };
   return (
@@ -76,7 +80,7 @@ export const RegisterForm: React.FC = () => {
             <ValidationMessage name='confirmPassword' />
           </div>
 
-          <Button type='submit' className='self-center w-1/2' size={"lg"}>
+          <Button loading={loading} type='submit' className='self-center w-1/2' size={"lg"}>
             Зарегистрироваться
             <UserPen />
           </Button>

@@ -3,11 +3,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Header } from "@shared/components/shared/header";
 import { Providers } from "@shared/components/shared/providers";
-
-// const nunito = Nunito({
-//   variable: "--font-nunito",
-//   subsets: ['latin', 'cyrillic']
-// });
+import { Navigation } from "@/shared/components/shared/navigation";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -25,10 +21,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${roboto.className}  min-h-screen`}>
+      <body className={`${roboto.className} bg-[#edeef0]`}>
         <Providers>
           <Header />
-          {children}
+          <div className='max-w-6xl mx-auto flex gap-2'>
+            <div className='w-48'>
+              <Navigation />
+            </div>
+            <main className='flex-1 min-w-0'>{children}</main>
+          </div>
         </Providers>
       </body>
     </html>
