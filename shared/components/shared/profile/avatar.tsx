@@ -5,45 +5,52 @@ import { cn } from "@shared/lib/utils";
 import defaultAvatar from "@/public/images/default-avatar.png";
 import { ChangeAvatarModal } from "../modals/avatar-modal";
 import Image from "next/image";
+import { useProfileStore } from "@/src/store/profile-state";
 
 interface Props {
   className?: string;
-  imageUrl: string | null;
   size: number;
+  isProfileOwner: boolean;
 }
 
-export const Avatar: React.FC<Props> = ({ className, imageUrl, size }) => {
+export const Avatar: React.FC<Props> = ({
+  className,
+  size,
+  isProfileOwner,
+}) => {
   const [openModal, setOpenModal] = useState(false);
-  const url = imageUrl ? imageUrl : defaultAvatar.src;
-  const [imageKey, setImageKey] = useState(url)
+  const imageUrl = useProfileStore((state) => state.profile.imageUrl);
 
-  const onImageUpdate = (src: string) => {
-    setImageKey(src)
-    setOpenModal(false);
+  const onImageClick = () => {
+    if (isProfileOwner) {
+      setOpenModal(true);
+    }
   };
 
   return (
     <div
       className={cn(
         className,
-        `rounded-full border shadow mr-5 overflow-hidden cursor-pointer`
+        `rounded-full border shadow mr-5 overflow-hidden`,
+        {'cursor-pointer': isProfileOwner}
       )}
       style={{ width: size, height: size }}
     >
       <Image
+        loading='eager'
         unoptimized={true}
-        onClick={() => setOpenModal(true)}
+        onClick={onImageClick}
         width={size}
         height={size}
         alt='аватарка'
-        src={imageKey}
-        key={imageKey}
+        src={imageUrl || defaultAvatar.src}
       />
-      <ChangeAvatarModal
-        onImageUpdate={onImageUpdate}
-        onClose={() => setOpenModal(false)}
-        open={openModal}
-      />
+      {isProfileOwner && (
+        <ChangeAvatarModal
+          onClose={() => setOpenModal(false)}
+          open={openModal}
+        />
+      )}
     </div>
   );
 };

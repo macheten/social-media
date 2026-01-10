@@ -2,6 +2,8 @@ import { ProfileInfo } from "@shared/components/shared/profile/profile-info";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
+import { PostsList } from "@/shared/components/shared/profile/posts-list";
+import { CreatePostModal } from "@/shared/components/shared/modals/create-post-modal";
 
 interface PageProps {
   searchParams: Promise<{
@@ -28,7 +30,9 @@ export default async function ProfilePage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <ProfileInfo userId={profileId as string} isProfileOwner={isProfileOwner} />
+      <ProfileInfo className="mb-2" userId={profileId as string} isProfileOwner={isProfileOwner} />
+      {isProfileOwner && <CreatePostModal />}
+      <PostsList className="mt-5" userId={profileId as string} isProfileOwner={isProfileOwner} />
     </div>
   );
 }

@@ -5,12 +5,11 @@ import { Button } from "../../ui/button";
 import { Image } from "lucide-react";
 import { updateAvatar } from "@/src/app/actions/profile/update-avatar";
 import toast from "react-hot-toast";
+import { useProfileStore } from "@/src/store/profile-state";
 
-interface Props {
-  onImageUpdate: (src: string) => void
-}
+export const ChangeAvatarForm: React.FC = () => {
+  const onImageUpdate = useProfileStore(state => state.setProfilePicture)
 
-export const ChangeAvatarForm: React.FC<Props> = ({ onImageUpdate }) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {

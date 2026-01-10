@@ -1,3 +1,3 @@
-import { User } from "@prisma/client";
+import { Post, User } from "@prisma/client";
 
 export type UserDTO = Omit<User, 'password' | 'provider' | 'providerId' | 'email'>

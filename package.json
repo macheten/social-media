@@ -36,6 +36,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hot-toast": "^2.6.0",
+    "react-intersection-observer": "^10.0.0",
     "shadcn": "^3.6.2",
     "tailwind-merge": "^3.4.0",
     "tsx": "^4.21.0",
@@ -45,7 +46,9 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.2.0",
     "@tailwindcss/postcss": "^4",
+    "@types/faker": "^6.6.8",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

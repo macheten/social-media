@@ -1,9 +1,11 @@
+import { Post, Prisma } from "@prisma/client";
 import { prisma } from "./prisma-client";
 import { hashSync } from "bcrypt";
+import { faker } from "@faker-js/faker";
 
 // создаёт тестовые данные
 async function up() {
-  await prisma.user.createMany({
+  const users = await prisma.user.createManyAndReturn({
     data: [
       {
         activated: true,
@@ -17,18 +19,36 @@ async function up() {
         email: "admin@test.com",
         username: "admin",
         password: hashSync("admin", 10),
-        role: 'ADMIN'
+        role: "ADMIN",
       },
     ],
   });
   console.log("created users");
+
+  let posts = [];
+  for (let i = 0; i < 70; i++) {
+    posts.push({
+      authorId: users[0].id,
+      content: faker.lorem.paragraph({ min: 3, max: 5 }),
+      title: faker.lorem.words({ min: 3, max: 5 }),
+      createdAt: faker.date.between({
+        from: '2020-01-01T00:00:00.000Z',
+        to: '2025-01-01T00:00:00.000Z'
+      })
+    });
+  }
+
+  await prisma.post.createMany({
+    data: posts,
+  });
+  console.log('created posts')
 }
 
 // зачищает таблицы в базе данных
 async function down() {
-  await prisma.user.deleteMany();
-  await prisma.verificationCode.deleteMany();
   await prisma.post.deleteMany();
+  await prisma.verificationCode.deleteMany();
+  await prisma.user.deleteMany();
 }
 
 async function main() {

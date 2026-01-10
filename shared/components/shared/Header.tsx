@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { Menu } from "lucide-react";
 import { AuthModal } from "./modals/auth-modal/auth-modal";
 import { AuthButton } from "./auth-button";
 import Link from "next/link";

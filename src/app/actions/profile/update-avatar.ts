@@ -31,7 +31,7 @@ export async function updateAvatar(image: File): Promise<ReturnType> {
         return error
     }
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     await prisma.user.update({
         where: {

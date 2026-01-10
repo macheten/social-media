@@ -17,7 +17,7 @@ datasource db {
     provider   String?
     providerId String?
     activated  Boolean @default(false)
-    postItems  Post[]
+    posts  Post[]
 
     imageUrl String?
     about String @default("")
@@ -33,7 +33,7 @@ model Post {
   content String
 
   author   User   @relation(fields: [authorId], references: [id])
-  authorId String @unique
+  authorId String
 
   createdAt DateTime @default(now())
 }

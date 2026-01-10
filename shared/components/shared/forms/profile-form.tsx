@@ -51,7 +51,7 @@ export const ProfileForm: React.FC<Props> = ({ profile }) => {
       <Form>
         <div className='max-w-125 mb-5'>
           <div className="block">
-            <Avatar imageUrl={profile.imageUrl} size={100} className="mb-5" />
+            <Avatar isProfileOwner={true} size={100} className="mb-5" />
           </div>
           <div className='mb-2'>
             <Label className='mb-1 text-md' htmlFor='username'>

@@ -1,7 +1,7 @@
 import { Button } from "@shared/components/ui/button";
 import { Input } from "@shared/components/ui/input";
 import { registerSchema } from "@shared/schemas/forms/auth-schemas";
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import { UserPen } from "lucide-react";
 import React, { useState } from "react";
 import { toFormikValidationSchema } from "zod-formik-adapter";

@@ -5,10 +5,9 @@ import { ChangeAvatarForm } from "../forms/avatar-form";
 interface Props {
   open: boolean;
   onClose: () => void;
-  onImageUpdate: (src: string) => void
 }
 
-export const ChangeAvatarModal: React.FC<Props> = ({ open, onClose, onImageUpdate }) => {
+export const ChangeAvatarModal: React.FC<Props> = ({ open, onClose }) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
@@ -21,7 +20,7 @@ export const ChangeAvatarModal: React.FC<Props> = ({ open, onClose, onImageUpdat
               Вы можете загрузить изображение в формате PNG, JPG.
             </div>
 
-            <ChangeAvatarForm onImageUpdate={onImageUpdate} />
+            <ChangeAvatarForm />
           </div>
 
           <div className='text-sm text-center opacity-60'>
