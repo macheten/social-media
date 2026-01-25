@@ -1,4 +1,5 @@
 import { prisma } from "@/prisma/prisma-client";
+import { PostDTO } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
 
 const ITEMS_PER_PAGE = 10;
@@ -27,6 +28,20 @@ export async function GET(req: NextRequest) {
       orderBy: {
         createdAt: "desc",
       },
+
+      include: {
+        author: {
+          select: {
+            username: true,
+            imageUrl: true
+          }
+        },
+        _count: {
+          select: {
+            comments: true
+          }
+        }
+      }
     });
 
     // если вернулось постов больше чем ITEMS_PER_PAGE, то след. страница есть
@@ -40,6 +55,11 @@ export async function GET(req: NextRequest) {
     // если есть след. страница, срезаем последний лишний элемент
     // если нету след. страницы, то возвращаем просто posts
     posts = hasNextPage ? posts.slice(0, -1) : posts;
+    // @ts-ignore
+    posts = posts.map((p) => {
+      const { _count, ...res } = p
+      return { ...res, commentsCount: p._count.comments }
+    })
 
     return NextResponse.json({
       posts,

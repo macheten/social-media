@@ -7,32 +7,44 @@ import { CreatePostModal } from "@/shared/components/shared/modals/create-post-m
 
 interface PageProps {
   searchParams: Promise<{
-    userId: string | undefined
-  }>
+    userId: string | undefined;
+  }>;
 }
 
 export default async function ProfilePage({ searchParams }: PageProps) {
-  const [ session, { userId } ] = await Promise.all([getServerSession(authOptions), searchParams])
-  let profileId = null
-  let isProfileOwner = false
+  const session = await getServerSession(authOptions);
+  const { userId } = await searchParams;
+  
+  let profileId = null;
+  let isProfileOwner = false;
 
   if (!session && !userId) {
     return redirect("/");
   }
 
   if (session?.user.id && userId) {
-    profileId = userId
-    isProfileOwner = session?.user.id === userId ? true : false 
+    profileId = userId;
+    isProfileOwner = session?.user.id === userId ? true : false;
   } else {
-    profileId = session?.user.id
-    isProfileOwner = true
+    profileId = session?.user.id;
+    isProfileOwner = true;
   }
 
   return (
     <div>
-      <ProfileInfo className="mb-2" userId={profileId as string} isProfileOwner={isProfileOwner} />
-      {isProfileOwner && <CreatePostModal />}
-      <PostsList className="mt-5" userId={profileId as string} isProfileOwner={isProfileOwner} />
+      <ProfileInfo
+        className='mb-2'
+        userId={profileId as string}
+        isProfileOwner={isProfileOwner}
+      />
+      <div className='max-w-150'>
+        {isProfileOwner && <CreatePostModal />}
+        <PostsList
+          className='mt-5'
+          userId={profileId as string}
+          isProfileOwner={isProfileOwner}
+        />
+      </div>
     </div>
   );
 }

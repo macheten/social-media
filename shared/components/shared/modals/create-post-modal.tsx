@@ -1,4 +1,6 @@
-import React from "react";
+'use client'
+
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +11,9 @@ import { CreatePostForm } from "../forms/create-post-form";
 import { AddPostBtn } from "../profile/add-post-btn";
 
 export const CreatePostModal: React.FC = () => {
+  const [open, setOpen] = useState(false)
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={e => setOpen(e)}>
       <DialogTrigger className="w-full">
         <AddPostBtn />
       </DialogTrigger>
@@ -19,7 +22,7 @@ export const CreatePostModal: React.FC = () => {
         <div>
           <h1 className='text-2xl mb-5'>Создание поста</h1>
 
-          <CreatePostForm />
+          <CreatePostForm onAdd={() => setOpen(false)} />
         </div>
       </DialogContent>
     </Dialog>

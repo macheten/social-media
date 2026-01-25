@@ -1,8 +1,16 @@
 import z from "zod";
 
 export const createPostSchema = z.object({
-  title: z.string("Заполните это поле").trim().min(5, "Минимум 5 символов").max(15, 'Максимум 15 символов'),
-  content: z.string("Заполните это поле").trim().min(5, "Минимум 5 символов").max(500, 'Максимум 500 символов'),
+  title: z
+    .string("Заполните это поле")
+    .trim()
+    .min(3, "Минимум 3 символа")
+    .max(30, "Максимум 30 символов"),
+  content: z
+    .string("Заполните это поле")
+    .trim()
+    .min(5, "Минимум 5 символов")
+    .max(1000, "Максимум 1000 символов"),
 });
 
 export const updateProfileSchema = z.object({

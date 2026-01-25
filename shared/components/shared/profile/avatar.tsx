@@ -36,9 +36,9 @@ export const Avatar: React.FC<Props> = ({
       )}
       style={{ width: size, height: size }}
     >
-      <Image
-        loading='eager'
-        unoptimized={true}
+      <img
+        // loading='eager'
+        // unoptimized={true}
         onClick={onImageClick}
         width={size}
         height={size}

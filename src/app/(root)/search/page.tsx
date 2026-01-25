@@ -1,3 +1,7 @@
+import { PeopleList } from "@/shared/components/shared/people-list";
+
 export default async function SearchPage() {
-    return <div>Search page</div>
+    return <div>
+        <PeopleList />
+    </div>
 }

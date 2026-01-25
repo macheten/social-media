@@ -1,9 +1,14 @@
 import React from "react";
 import { Skeleton } from "../ui/skeleton";
+import { cn } from "@/shared/lib/utils";
 
-export const PostSkeleton: React.FC = () => {
+interface Props {
+  className?: string
+}
+
+export const PostSkeleton: React.FC<Props> = ({ className }) => {
   return (
-    <div className='mb-4'>
+    <div className={cn(className, 'mb-4 z-0')}>
       <div className='flex items-center mb-3'>
         <Skeleton className='w-12.5 h-12.5 rounded-full mr-3' />
         <Skeleton className='w-12.5 h-2.5' />

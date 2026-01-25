@@ -1,35 +1,103 @@
-import { Post } from '@prisma/client'
-import { create } from 'zustand'
-import { Api } from '../services'
+import { create } from "zustand";
+import { Api } from "../services";
+import {
+  createPost,
+  CreatePostProps,
+} from "../app/actions/profile/create-post";
+import { FetchPostsProps } from "../services/postsService";
+import { deletePost } from "../app/actions/profile/delete-post";
+import {
+  updatePost,
+  UpdatePostProps,
+} from "../app/actions/profile/update-post";
+import { PostDTO } from "@/types/types";
 
 interface Store {
-    posts: Post[],
-    hasNextPage: boolean,
-    endCursor: string | null,
+  posts: PostDTO[];
+  hasNextPage: boolean;
+  endCursor: string | null;
+  fetchingPosts: boolean;
 
-    loading: boolean,
-    error: boolean,
-
-    fetchPosts: (userId: string, cursor: string | null) => void
+  fetchPosts: ({}: FetchPostsProps) => Promise<void>;
+  resetState: () => void;
+  addPost: ({}: CreatePostProps) => Promise<void>;
+  deletePost: (postId: string) => Promise<void>;
+  editPost: ({}: UpdatePostProps) => Promise<void>;
+  updateCommentsCount: (postId: string, type: "inc" | "dec") => void;
 }
 
-export const usePostState = create<Store>((set) => ({
-    posts: [] as Post[],
-    error: false,
-    loading: false,
-    endCursor: null,
-    hasNextPage: true,
+export const usePostStore = create<Store>((set) => ({
+  posts: [] as PostDTO[],
+  hasNextPage: true,
+  endCursor: null,
+  fetchingPosts: false,
 
-    async fetchPosts(userId, cursor) {
-        try {
-            set({ loading: true, error: false })
-            const { pageInfo, posts } = await Api.posts.fetchPosts({ cursor, userId })
-            set({ posts, endCursor: pageInfo.endCursor, hasNextPage: pageInfo.hasNextPage })
-        } catch (error) {
-            console.error('FETCH POSTS error', error)
-            set({ error: true })
-        } finally {
-            set({ loading: false })
+  updateCommentsCount(postId, type) {
+    const value = type === "dec" ? -1 : 1;
+    set((state) => ({
+      posts: state.posts.map((p) => {
+        if (p.id === postId) {
+          return { ...p, commentsCount: p.commentsCount + value };
         }
-    },
-}))
+        return p;
+      }),
+    }));
+  },
+
+  async fetchPosts(data) {
+    try {
+      set({ fetchingPosts: true });
+      const { endCursor, hasNextPage, posts } =
+        await Api.posts.fetchPosts(data);
+      set((state) => ({
+        endCursor,
+        hasNextPage,
+        posts: [...state.posts, ...posts],
+      }));
+    } catch (error) {
+      console.error("FETCH POSTS error", error);
+    } finally {
+      set({ fetchingPosts: false });
+    }
+  },
+
+  resetState() {
+    set({ endCursor: null, hasNextPage: true, posts: [], fetchingPosts: false });
+  },
+
+  async addPost(data) {
+    try {
+      const { newPost } = await createPost(data);
+      set((state) => ({ posts: [newPost!, ...state.posts] }));
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async deletePost(postId) {
+    try {
+      await deletePost(postId);
+      set((state) => ({
+        posts: state.posts.filter((post) => post.id !== postId),
+      }));
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async editPost(data) {
+    try {
+      await updatePost(data);
+      set((state) => ({
+        posts: state.posts.map((post) => {
+          console.log(data);
+          return post.id === data.postId
+            ? { ...post, content: data.content, title: data.title }
+            : post;
+        }),
+      }));
+    } catch (error) {
+      throw error;
+    }
+  },
+}));

@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
   }, []);
 
   return (
-    <div className='p-2 border-b items-center bg-white mb-2 shadow sticky top-0'>
+    <div className='p-2 border-b items-center bg-white mb-2 shadow sticky top-0 z-1'>
       <Container>
         <div className='flex justify-between'>
           <Link className='text-2xl' href={"/"}>

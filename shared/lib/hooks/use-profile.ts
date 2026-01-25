@@ -1,16 +1,19 @@
-import { UserDTO } from "@/types/types";
-import { Api } from "@/src/services";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useProfileStore } from "@/src/store/profile-state";
 
 export const useProfile = (userId: string) => {
-  const [profile, setProfile] = useState<UserDTO | null>(null);
+  const [getProfile, profile, loading] = useProfileStore(
+    useShallow((state) => [state.getProfile, state.profile, state.loading]),
+  );
 
   useEffect(() => {
     async function fetch() {
-      setProfile((await Api.user.fetchProfile(userId)).profile);
+      await getProfile(userId);
     }
+
     fetch();
   }, [userId]);
 
-  return profile
+  return { profile, loading };
 };

@@ -7,15 +7,21 @@ import { Textarea } from "../../ui/textarea";
 import { Button } from "../../ui/button";
 import { ValidationMessage } from "../validation-message";
 import {
-  CreatePost,
+  createPost,
   CreatePostProps,
 } from "@/src/app/actions/profile/create-post";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { createPostSchema } from "@/shared/schemas/forms/profile-schemas";
 import toast from "react-hot-toast";
+import { usePostStore } from "@/src/store/posts-state";
 
-export const CreatePostForm: React.FC = () => {
+interface Props {
+  onAdd: () => void
+}
+
+export const CreatePostForm: React.FC<Props> = ({ onAdd }) => {
   const [loading, setLoading] = useState(false);
+  const addPost = usePostStore(state => state.addPost)
   const initialValues: CreatePostProps = {
     title: "",
     content: "",
@@ -24,14 +30,10 @@ export const CreatePostForm: React.FC = () => {
   const onSubmit = async (data: typeof initialValues) => {
     try {
       setLoading(true);
-      const res = await CreatePost(data);
-      if (res.success) {
-        toast.success("Пост добавлен вам на страницу");
-      } else {
-        toast.error("Что-то пошло не так");
-      }
+      await addPost(data);
+      onAdd()
+      toast.success("Пост добавлен вам на страницу");
     } catch (error) {
-      console.error("CREATE POST FORM ERROR");
       toast.error("Что-то пошло не так");
     } finally {
       setLoading(false);

@@ -3,6 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { prisma } from "@/prisma/prisma-client";
+import { PostDTO } from "@/types/types";
 
 export interface CreatePostProps {
   title: string;
@@ -11,29 +12,37 @@ export interface CreatePostProps {
 
 interface ReturnType {
   success: boolean;
+  newPost?: PostDTO;
 }
 
-export async function CreatePost({
+export async function createPost({
   content,
   title,
 }: CreatePostProps): Promise<ReturnType> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return {
-      success: false,
-    };
+    throw new Error("unauthorized");
   }
 
-  await prisma.post.create({
+  const newPost = await prisma.post.create({
     data: {
       content,
       title,
       authorId: session.user.id,
     },
+
+    include: {
+      author: {
+        select: {
+          username: true
+        }
+      }
+    }
   });
 
   return {
-    success: true
-  }
+    success: true,
+    newPost,
+  };
 }

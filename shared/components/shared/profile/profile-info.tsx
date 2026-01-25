@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { cn } from "@shared/lib/utils";
 import { ProfileSkeleton } from "../../skeletons/profile-skeleton";
 import { ArrowRight, Pencil, UserPlus } from "lucide-react";
@@ -8,8 +8,7 @@ import Link from "next/link";
 import { Button } from "../../ui/button";
 import { WhiteBlock } from "../white-block";
 import { Avatar } from "./avatar";
-import { useProfileStore } from "@/src/store/profile-state";
-import { useShallow } from "zustand/react/shallow";
+import { useProfile } from "@/shared/lib/hooks/use-profile";
 
 interface Props {
   className?: string;
@@ -22,17 +21,7 @@ export const ProfileInfo: React.FC<Props> = ({
   userId,
   isProfileOwner,
 }) => {
-  const [getProfile, profile, loading] = useProfileStore(
-    useShallow((state) => [state.getProfile, state.profile, state.loading])
-  );
-
-  useEffect(() => {
-    async function fetch() {
-      await getProfile(userId);
-    }
-
-    fetch();
-  }, [userId]);
+  const { profile, loading } = useProfile(userId)
 
   return (
     <div className={cn(className)}>
@@ -57,7 +46,6 @@ export const ProfileInfo: React.FC<Props> = ({
                     )
                   ) : (
                     <div>
-                      {/* <span className='text-primary'>О себе:</span>{" "} */}
                       <div className='text-black font-mono'>
                         {profile.about}
                       </div>
