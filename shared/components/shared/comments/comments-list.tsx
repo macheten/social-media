@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@shared/lib/utils";
 import { useCommentsState } from "@/src/store/comments-state";
 import { CommentItem } from "./comment-item";
-import { CommentSkeleton } from "../skeletons/comment-skeleton";
 import { useSession } from "next-auth/react";
-import { NoComments } from "./comments/no-comments";
+import { CommentSkeleton } from "../../skeletons/comment-skeleton";
+import { NoComments } from "./no-comments";
 
 interface Props {
   className?: string;

@@ -1,4 +1,4 @@
-import { CommentDTO, PostDTO } from "@/types/types";
+import { CommentDTO, PostDTO, SetReactionProps } from "@/types/types";
 import { create } from "zustand";
 import { FetchCommentsProps } from "../services/commentsService";
 import { Api } from "../services";
@@ -7,7 +7,10 @@ import {
   CreateCommentProps,
 } from "../app/actions/comments/create-comment";
 import { deleteComment } from "../app/actions/comments/delete-comment";
-import { usePostStore } from "./posts-state";
+import { SetPostReactionProps, usePostStore } from "./posts-state";
+import { toggleReaction } from "../app/actions/toggle-reaction";
+import { ReactionType } from "@prisma/client";
+
 
 interface Store {
   comments: CommentDTO[];
@@ -16,6 +19,7 @@ interface Store {
   nextCursor: string | null;
   isFetchingComments: boolean;
   fetchingPost: boolean;
+  notFound: boolean;
 
   fetchComments: ({}: FetchCommentsProps) => Promise<void>;
   fetchPostById: (postId: string) => Promise<void>;
@@ -23,6 +27,8 @@ interface Store {
   createComment: ({}: CreateCommentProps) => Promise<void>;
   removeComment: (id: string) => Promise<void>;
   resetState: () => void;
+  setPostReaction: ({}: SetPostReactionProps) => Promise<void>;
+  setCommentReaction: ({}: SetReactionProps) => Promise<void>;
 }
 
 export const useCommentsState = create<Store>((set) => ({
@@ -32,15 +38,38 @@ export const useCommentsState = create<Store>((set) => ({
   isFetchingComments: true,
   post: {} as PostDTO,
   fetchingPost: true,
+  notFound: false,
+
+  async setCommentReaction({ id, type }) {
+    const res = await toggleReaction({
+      type, commentId: id
+    })
+    set(state => ({
+      comments: state.comments.map(c => {
+        return c.id === id ? { ...c, reactions: res.reactions } : c
+      })
+    }))
+  },
 
   setPost(post) {
     set({ post });
   },
 
+  async setPostReaction(data) {
+    const res = await toggleReaction(data);
+    set((state) => ({ post: { ...state.post, reactions: res.reactions } }));
+  },
+
   async fetchPostById(postId) {
-    set({ fetchingPost: true });
-    const { post } = await Api.posts.getPost(postId);
-    set({ post, fetchingPost: false });
+    try {
+      set({ fetchingPost: true, notFound: false });
+      const { post } = await Api.posts.getPost(postId);
+      set({ post });
+    } catch (error) {
+      set({ notFound: true });
+    } finally {
+      set({ fetchingPost: false });
+    }
   },
 
   async fetchComments(data) {

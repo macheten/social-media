@@ -1,4 +1,4 @@
-import { Comment, Post, User } from "@prisma/client";
+import { Comment, Post, ReactionType, User } from "@prisma/client";
 
 export type UserDTO = Omit<
   User,
@@ -7,20 +7,33 @@ export type UserDTO = Omit<
 export interface PersonDTO {
   id: string;
   username: string;
-  imageUrl: string;
+  imageUrl: string | null;
 }
 
 export interface CommentDTO extends Comment {
   author: {
-    username: string
-    imageUrl: string | null
-  }
+    username: string;
+    imageUrl: string | null;
+  };
+  reactions: ReactionsDTO
 }
 
 export interface PostDTO extends Post {
   author: {
-    username: string
-    imageUrl: string
-  }
-  commentsCount: number
+    username: string;
+    imageUrl: string | null;
+  };
+  reactions: ReactionsDTO;
+  commentsCount: number;
+}
+
+export interface ReactionsDTO {
+  likes: number;
+  dislikes: number;
+  userReaction: ReactionType | null; // реакция зарегистрировавшегося пользователя
+}
+
+export interface SetReactionProps {
+  type: ReactionType
+  id: string
 }

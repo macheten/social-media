@@ -1,11 +1,11 @@
 import React from "react";
+import { Ellipsis, Pencil, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Ellipsis, Pencil, Trash } from "lucide-react";
+} from "../../ui/dropdown-menu";
 
 interface Props {
   onClickDelete: () => void;

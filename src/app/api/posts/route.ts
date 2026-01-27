@@ -1,6 +1,8 @@
 import { prisma } from "@/prisma/prisma-client";
-import { PostDTO } from "@/types/types";
+import { mapPostToDto } from "@/shared/lib/map-post-to-dto";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 const ITEMS_PER_PAGE = 10;
 export async function GET(req: NextRequest) {
@@ -8,6 +10,7 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const userId = searchParams.get("userId");
     const cursor = searchParams.get("cursor");
+    const session = await getServerSession(authOptions)
 
     if (!userId) {
       return NextResponse.json(
@@ -36,6 +39,14 @@ export async function GET(req: NextRequest) {
             imageUrl: true
           }
         },
+
+        reactions: {
+          select: {
+            type: true,
+            userId: true
+          }
+        },
+
         _count: {
           select: {
             comments: true
@@ -56,9 +67,8 @@ export async function GET(req: NextRequest) {
     // если нету след. страницы, то возвращаем просто posts
     posts = hasNextPage ? posts.slice(0, -1) : posts;
     // @ts-ignore
-    posts = posts.map((p) => {
-      const { _count, ...res } = p
-      return { ...res, commentsCount: p._count.comments }
+    posts = posts.map((post) => {
+      return mapPostToDto(post, session?.user.id)
     })
 
     return NextResponse.json({

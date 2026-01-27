@@ -15,13 +15,13 @@ import {
   ThumbsUp,
   Trash2,
 } from "lucide-react";
-import { usePostStore } from "@/src/store/posts-state";
+import { SetPostReactionProps, usePostStore } from "@/src/store/posts-state";
 import toast from "react-hot-toast";
 import { EditPostModal } from "../modals/edit-post-modal";
 import Link from "next/link";
-import { PostDTO } from "@/types/types";
+import { PostDTO, SetReactionProps } from "@/types/types";
 import { UpdatePostProps } from "@/src/app/actions/profile/update-post";
-import { toggleReaction } from "@/src/app/actions/toggle-reaction";
+import { ReactionsButtons } from "../reactions-buttons";
 
 interface Props {
   className?: string;
@@ -30,6 +30,7 @@ interface Props {
   postItem: PostDTO;
   onEditPost: ({}: UpdatePostProps) => Promise<void>;
   handleDelete: (postId: string) => Promise<void>;
+  handleSetReaction: ({}: SetReactionProps) => Promise<void>;
 }
 
 export const PostItem: React.FC<Props> = ({
@@ -39,6 +40,7 @@ export const PostItem: React.FC<Props> = ({
   postItem: post,
   onEditPost,
   handleDelete,
+  handleSetReaction,
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -46,7 +48,6 @@ export const PostItem: React.FC<Props> = ({
     if (window.confirm("Вы точно хотите удалить этот пост?")) {
       try {
         setIsDeleting(true);
-        // await deletePost(post.id);
         await handleDelete(post.id);
         toast.success("Пост удалён");
       } catch (error) {
@@ -90,12 +91,13 @@ export const PostItem: React.FC<Props> = ({
           </div>
           <div className='flex justify-between'>
             <div className="flex gap-1">
-              <Button onClick={() => toggleReaction({ postId: post.id, type: 'LIKE' })} variant={'outline'}>
-                <ThumbsUp />
-              </Button>
-              <Button onClick={() => toggleReaction({ postId: post.id, type: 'DISLIKE' })} variant={'outline'}>
-                <ThumbsDown />
-              </Button>
+              <ReactionsButtons
+                postId={post.id}
+                dislikes={post.reactions.dislikes}
+                likes={post.reactions.likes}
+                handleSetReaction={handleSetReaction}
+                userReaction={post.reactions.userReaction}
+              />
               {!hideCommentsButton && (
                 <Link href={`/comments/${post.id}`} scroll={false}>
                   <Button variant={"outline"}>

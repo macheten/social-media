@@ -1,4 +1,4 @@
-import { CommentsList } from "@/shared/components/shared/comments-list";
+import { CommentsList } from "@/shared/components/shared/comments/comments-list";
 import { CommentsCount } from "@/shared/components/shared/comments/comments-count";
 import { SinglePost } from "@/shared/components/shared/comments/single-post";
 import { CreateCommentForm } from "@/shared/components/shared/forms/create-comment-form";

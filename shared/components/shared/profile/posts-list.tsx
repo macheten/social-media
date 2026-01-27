@@ -28,6 +28,7 @@ export const PostsList: React.FC<Props> = ({
     hasNextPage,
     posts,
     initialLoading,
+    handleSetReaction,
   } = usePosts({ userId });
 
   const loadMore = () => {
@@ -44,6 +45,7 @@ export const PostsList: React.FC<Props> = ({
     <div className={cn(className)}>
       {posts.map((post, i) => (
         <PostItem
+          handleSetReaction={handleSetReaction}
           handleDelete={handleDelete}
           className='mb-3'
           onEditPost={handleEdit}

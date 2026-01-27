@@ -1,5 +1,6 @@
 import { UpdatePostProps } from "@/src/app/actions/profile/update-post";
-import { usePostStore } from "@/src/store/posts-state";
+import { SetPostReactionProps, usePostStore } from "@/src/store/posts-state";
+import { SetReactionProps } from "@/types/types";
 import { useEffect, useState } from "react";
 
 interface UsePostsProps {
@@ -16,6 +17,7 @@ export const usePosts = ({ userId }: UsePostsProps) => {
     fetchingPosts,
     hasNextPage,
     posts,
+    setReaction
   } = usePostStore();
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -26,6 +28,11 @@ export const usePosts = ({ userId }: UsePostsProps) => {
   const handleDelete = async (postId: string) => {
     await deletePost(postId);
   };
+
+  const handleSetReaction = async (data: SetReactionProps) => {
+    await setReaction(data)
+  }
+
 
   // initial fetch
   useEffect(() => {
@@ -50,5 +57,6 @@ export const usePosts = ({ userId }: UsePostsProps) => {
     handleEdit,
     handleDelete,
     initialLoading,
+    handleSetReaction
   };
 };

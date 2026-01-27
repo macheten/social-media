@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@shared/lib/utils";
 import { PostItem } from "../profile/post-item";
-import { PostDTO } from "@/types/types";
+import { PostDTO, SetReactionProps } from "@/types/types";
 import {
   updatePost,
   UpdatePostProps,
@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useCommentsState } from "@/src/store/comments-state";
 import { PostSkeleton } from "../../skeletons/post-skeleton";
 import { useSession } from "next-auth/react";
+import { useShallow } from "zustand/react/shallow";
 
 interface Props {
   className?: string;
@@ -20,9 +21,14 @@ interface Props {
 }
 
 export const SinglePost: React.FC<Props> = ({ className, postId }) => {
-  const post = useCommentsState((state) => state.post);
-  const fetchPostById = useCommentsState((state) => state.fetchPostById);
-  const setPost = useCommentsState((state) => state.setPost);
+  const [post, fetchPostById, setPost, setPostReaction] = useCommentsState(
+    useShallow((state) => [
+      state.post,
+      state.fetchPostById,
+      state.setPost,
+      state.setPostReaction,
+    ]),
+  );
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -44,13 +50,20 @@ export const SinglePost: React.FC<Props> = ({ className, postId }) => {
     router.push(`/profile?userId=${post.authorId}`);
   };
 
+  const handleSetReaction = async ({ id, type }: SetReactionProps) => {
+    await setPostReaction({
+      postId: id, type
+    })
+  };
+
   if (loading || status === "loading") {
-    return <PostSkeleton className="mb-5" />;
+    return <PostSkeleton className='mb-5' />;
   }
 
   return (
     <div className={cn(className)}>
       <PostItem
+        handleSetReaction={handleSetReaction}
         handleDelete={handleDelete}
         onEditPost={handleEdit}
         postItem={post}

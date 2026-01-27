@@ -10,8 +10,13 @@ interface Props {
 }
 
 export const CommentsCount: React.FC<Props> = ({ marginClassName }) => {
-  const commentsCount = useCommentsState((state) => state.post.commentsCount);
+  const commentsCount = useCommentsState((state) => state.post?.commentsCount);
   const loading = useCommentsState((state) => state.fetchingPost);
+  const notFound = useCommentsState((state) => state.notFound);
+
+  if (notFound) {
+    return null
+  }
 
   if (loading) {
     return <Skeleton className={cn(marginClassName, "h-5 w-50")} />

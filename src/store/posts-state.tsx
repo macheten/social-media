@@ -10,7 +10,14 @@ import {
   updatePost,
   UpdatePostProps,
 } from "../app/actions/profile/update-post";
-import { PostDTO } from "@/types/types";
+import { PostDTO, SetReactionProps } from "@/types/types";
+import { ReactionType } from "@prisma/client";
+import { toggleReaction } from "../app/actions/toggle-reaction";
+
+export interface SetPostReactionProps {
+  type: ReactionType;
+  postId: string;
+}
 
 interface Store {
   posts: PostDTO[];
@@ -24,6 +31,7 @@ interface Store {
   deletePost: (postId: string) => Promise<void>;
   editPost: ({}: UpdatePostProps) => Promise<void>;
   updateCommentsCount: (postId: string, type: "inc" | "dec") => void;
+  setReaction: ({}: SetReactionProps) => Promise<void>;
 }
 
 export const usePostStore = create<Store>((set) => ({
@@ -62,7 +70,12 @@ export const usePostStore = create<Store>((set) => ({
   },
 
   resetState() {
-    set({ endCursor: null, hasNextPage: true, posts: [], fetchingPosts: false });
+    set({
+      endCursor: null,
+      hasNextPage: true,
+      posts: [],
+      fetchingPosts: false,
+    });
   },
 
   async addPost(data) {
@@ -90,7 +103,6 @@ export const usePostStore = create<Store>((set) => ({
       await updatePost(data);
       set((state) => ({
         posts: state.posts.map((post) => {
-          console.log(data);
           return post.id === data.postId
             ? { ...post, content: data.content, title: data.title }
             : post;
@@ -99,5 +111,18 @@ export const usePostStore = create<Store>((set) => ({
     } catch (error) {
       throw error;
     }
+  },
+
+  async setReaction({ id, type }) {
+    const res = await toggleReaction({
+      type, postId: id
+    });
+    set((state) => ({
+      posts: state.posts.map((post) => {
+        return post.id === id
+          ? { ...post, reactions: res.reactions }
+          : post;
+      }),
+    }));
   },
 }));

@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { ReactionType } from "@prisma/client";
 import { prisma } from "@/prisma/prisma-client";
+import { mapReactionsToDto } from "@/shared/lib/get-reactions";
 
 export interface ToggleReactionProps {
   commentId?: string;
@@ -66,4 +67,18 @@ export async function toggleReaction({
       },
     });
   }
+
+  const reactions = await prisma.reaction.findMany({
+    where: {
+      ...(commentId ? { commentId } : { postId }),
+    },
+    select: {
+      type: true,
+      userId: true,
+    },
+  });
+
+  return {
+    reactions: mapReactionsToDto(reactions, session.user.id),
+  };
 }

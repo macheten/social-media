@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { cn } from "@shared/lib/utils";
-import { CommentDTO } from "@/types/types";
+import { CommentDTO, SetReactionProps } from "@/types/types";
 import defaultAvatar from "@/public/images/default-avatar.png";
 import { CommentItemMenu } from "./comment-item-menu";
 import { useCommentsState } from "@/src/store/comments-state";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { ReactionsButtons } from "../reactions-buttons";
 
 interface Props extends CommentDTO {
   className?: string;
@@ -23,10 +23,14 @@ export const CommentItem: React.FC<Props> = ({
   authorId,
   handleLinkClick,
   isCommentCreator,
+  reactions,
   id,
 }) => {
   const [deleting, setDeleting] = useState(false);
   const removeComment = useCommentsState((state) => state.removeComment);
+  const setCommentReaction = useCommentsState(
+    (state) => state.setCommentReaction,
+  );
   const router = useRouter();
   const onClickDelete = async () => {
     try {
@@ -41,6 +45,10 @@ export const CommentItem: React.FC<Props> = ({
       setDeleting(false);
     }
   };
+
+  const handleSetReaction = async (data: SetReactionProps) => {
+    await setCommentReaction(data);
+  };
   return (
     <div
       className={cn(className, "border bg-white max-w-150 rounded-2xl p-2", {
@@ -48,7 +56,6 @@ export const CommentItem: React.FC<Props> = ({
       })}
     >
       <div className='flex justify-between'>
-        {/* <Link onClick={() => closeModal?.()} href={`/profile?userId=${authorId}`}> */}
         <div
           className='cursor-pointer'
           onClick={() => {
@@ -67,10 +74,19 @@ export const CommentItem: React.FC<Props> = ({
             <div className='font-medium'>{author.username}</div>
           </div>
         </div>
-        {/* </Link> */}
         {isCommentCreator && <CommentItemMenu onClickDelete={onClickDelete} />}
       </div>
-      {content}
+      <div>{content}</div>
+      <div>
+        <ReactionsButtons
+          size={"sm"}
+          handleSetReaction={handleSetReaction}
+          commentId={id}
+          dislikes={reactions.dislikes}
+          likes={reactions.likes}
+          userReaction={reactions.userReaction}
+        />
+      </div>
     </div>
   );
 };

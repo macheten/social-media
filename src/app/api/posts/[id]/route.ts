@@ -1,5 +1,9 @@
 import { prisma } from "@/prisma/prisma-client";
+import { PostDTO } from "@/types/types";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import { mapPostToDto } from "@/shared/lib/map-post-to-dto";
 
 interface Params {
   params: Promise<{
@@ -9,6 +13,7 @@ interface Params {
 
 export async function GET(req: NextRequest, { params }: Params) {
   const { id } = await params;
+  const session = await getServerSession(authOptions);
 
   if (!id) {
     return NextResponse.json({ message: "Укажите id" }, { status: 400 });
@@ -27,19 +32,31 @@ export async function GET(req: NextRequest, { params }: Params) {
         },
       },
 
+      reactions: {
+        select: {
+          type: true,
+          userId: true,
+        },
+      },
+
       _count: {
         select: {
-            comments: true
-        }
-      }
+          comments: true,
+        },
+      },
     },
   });
 
   if (!post) {
-    return NextResponse.json({ post: null, message: "Пост не найден" });
+    return NextResponse.json(
+      { post: null, message: "Пост не найден" },
+      { status: 404 },
+    );
   }
 
-  const { _count, ...postRes } = post
+  const postRes = mapPostToDto(post, session?.user.id)
 
-  return NextResponse.json({ post: {...postRes, commentsCount: post._count.comments} });
+  return NextResponse.json({
+    post: postRes,
+  });
 }
