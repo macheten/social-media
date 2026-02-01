@@ -16,8 +16,9 @@ interface FetchPeopleResp {
 export const fetchProfile = async (
   userId: string
 ): Promise<FetchProfileResp> => {
-  const { data } = await axiosInstance.get(`/profile/${userId}`);
-  return data;
+  console.log('QWERTY')
+  const res = await axiosInstance.get(`/profile/${userId}`);
+  return res.data;
 };
 
 export const fetchPeople = async (

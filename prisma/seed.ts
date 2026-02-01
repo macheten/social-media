@@ -1,4 +1,4 @@
-import { Post, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma-client";
 import { hashSync } from "bcrypt";
 import { faker } from "@faker-js/faker";
@@ -12,6 +12,7 @@ async function up() {
         email: "user@test.com",
         username: "user",
         password: hashSync("user", 10),
+        imageUrl: 'https://entih8fu65opczku.public.blob.vercel-storage.com/Cat%20with%20soviet%20hat-jbfx9QycFSP9EjdYKwjOTfNsXdvuMv.jpg'
       },
 
       {
@@ -20,6 +21,7 @@ async function up() {
         username: "admin",
         password: hashSync("admin", 10),
         role: "ADMIN",
+        imageUrl: 'https://entih8fu65opczku.public.blob.vercel-storage.com/hRLB3BWK-avAhmdYJfkuoGnzDW8JBqAex4KiAFE.jpg'
       },
     ],
   });
@@ -36,6 +38,48 @@ async function up() {
       }),
     });
   }
+
+  const chat = await prisma.chat.create({
+    data: {
+      type: 'PRIVATE',
+    }
+  })
+  console.log('created chat')
+
+  await prisma.chatMember.createMany({
+    data: [
+      {
+        chatId: chat.id,
+        userId: users[0].id
+      },
+
+      {
+        chatId: chat.id,
+        userId: users[1].id
+      }
+    ]
+  })
+  console.log('created chat members')
+  let messages = [] 
+
+  for (let i = 0; i < 100; i++) {
+    messages.push({
+        chatId: chat.id,
+        content: faker.lorem.paragraph(5),
+        userId: users[0].id,
+        createdAt: faker.date.between({
+        from: "2020-01-01T00:00:00.000Z",
+        to: "2025-01-01T00:00:00.000Z",
+      }),
+      })
+  }
+  
+  await prisma.message.createMany({
+    data: messages
+  })
+  console.log('created messages')
+
+  
 
   await prisma.user.createMany({
     data: restUsers,
@@ -89,8 +133,13 @@ async function up() {
 
 // зачищает таблицы в базе данных
 async function down() {
+  await prisma.reaction.deleteMany();
+  await prisma.comment.deleteMany();
   await prisma.post.deleteMany();
   await prisma.verificationCode.deleteMany();
+  await prisma.message.deleteMany();
+  await prisma.chatMember.deleteMany();
+  await prisma.chat.deleteMany();
   await prisma.user.deleteMany();
 }
 

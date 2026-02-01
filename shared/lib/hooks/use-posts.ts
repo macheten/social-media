@@ -17,7 +17,7 @@ export const usePosts = ({ userId }: UsePostsProps) => {
     fetchingPosts,
     hasNextPage,
     posts,
-    setReaction
+    setReaction,
   } = usePostStore();
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -30,23 +30,20 @@ export const usePosts = ({ userId }: UsePostsProps) => {
   };
 
   const handleSetReaction = async (data: SetReactionProps) => {
-    await setReaction(data)
-  }
-
+    await setReaction(data);
+  };
 
   // initial fetch
   useEffect(() => {
-    if (!cursor) {
-      fetchPosts({ userId, cursor }).then(() => setInitialLoading(false));
-    }
-  }, [userId, cursor]);
+    fetchPosts({ userId, cursor: null }).then(() => setInitialLoading(false));
+  }, [userId]);
 
   useEffect(() => {
     return () => {
       resetState();
-      setInitialLoading(true)
+      setInitialLoading(true);
     };
-  }, [userId])
+  }, [userId]);
 
   return {
     fetchingPosts,
@@ -57,6 +54,6 @@ export const usePosts = ({ userId }: UsePostsProps) => {
     handleEdit,
     handleDelete,
     initialLoading,
-    handleSetReaction
+    handleSetReaction,
   };
 };

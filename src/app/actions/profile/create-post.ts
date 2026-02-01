@@ -12,7 +12,7 @@ export interface CreatePostProps {
 
 interface ReturnType {
   success: boolean;
-  newPost?: PostDTO;
+  post: PostDTO
 }
 
 export async function createPost({
@@ -35,7 +35,8 @@ export async function createPost({
     include: {
       author: {
         select: {
-          username: true
+          username: true,
+          imageUrl: true
         }
       }
     }
@@ -43,6 +44,14 @@ export async function createPost({
 
   return {
     success: true,
-    newPost,
+    post: {
+      ...newPost,
+       reactions: {
+        likes: 0,
+        dislikes: 0,
+        userReaction: null
+      },
+      commentsCount: 0
+    },
   };
 }

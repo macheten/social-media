@@ -85,9 +85,9 @@ export const useCommentsState = create<Store>((set) => ({
   },
 
   async createComment(data) {
-    const newComment = await createComment(data);
+    const { comment } = await createComment(data);
     set((state) => ({
-      comments: [newComment, ...state.comments],
+      comments: [comment, ...state.comments],
       post: { ...state.post, commentsCount: state.post.commentsCount + 1 },
     }));
     usePostStore.getState().updateCommentsCount(data.postId, "inc");

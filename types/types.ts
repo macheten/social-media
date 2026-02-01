@@ -1,9 +1,10 @@
-import { Comment, Post, ReactionType, User } from "@prisma/client";
+import { Comment, Message, Post, ReactionType, User } from "@prisma/client";
 
 export type UserDTO = Omit<
   User,
   "password" | "provider" | "providerId" | "email"
 >;
+
 export interface PersonDTO {
   id: string;
   username: string;
@@ -15,7 +16,7 @@ export interface CommentDTO extends Comment {
     username: string;
     imageUrl: string | null;
   };
-  reactions: ReactionsDTO
+  reactions: ReactionsDTO;
 }
 
 export interface PostDTO extends Post {
@@ -33,7 +34,16 @@ export interface ReactionsDTO {
   userReaction: ReactionType | null; // реакция зарегистрировавшегося пользователя
 }
 
+export interface ChatItemDTO {}
+
+export interface MessageDTO extends Message {
+  user: {
+    username: string;
+    imageUrl: string | null;
+  };
+}
+
 export interface SetReactionProps {
-  type: ReactionType
-  id: string
+  type: ReactionType;
+  id: string;
 }

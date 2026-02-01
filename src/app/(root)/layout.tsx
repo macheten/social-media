@@ -1,9 +1,12 @@
+import { Header } from "@/shared/components/shared/header";
+import { Navigation } from "@/shared/components/shared/navigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Social Media",
 };
 
+// HomeLayout.tsx
 export default function HomeLayout({
   children,
   modal,
@@ -12,9 +15,15 @@ export default function HomeLayout({
   modal: React.ReactNode;
 }>) {
   return (
-    <>
-      {children}
+    <main className='min-h-screen grid grid-rows-[auto_1fr]'>
+      <Header />
+      <div className='max-w-6xl mx-auto w-full grid grid-cols-[192px_1fr] gap-6 pb-2'>
+        <Navigation />
+        <div className='min-h-0'>
+          {children}
+        </div>
+      </div>
       {modal}
-    </>
+    </main>
   );
 }

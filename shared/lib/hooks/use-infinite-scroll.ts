@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 interface InfiniteScrollProps {
   fetching: boolean;
   hasNextPage: boolean;
-  loadMore: () => void;
+  loadMore: () => Promise<void>;
 }
 
 export const useInfiniteScroll = ({
@@ -11,16 +11,16 @@ export const useInfiniteScroll = ({
   hasNextPage,
   loadMore,
 }: InfiniteScrollProps) => {
-  const endOfPage = useRef(null);
+  const endOfPage = useRef<HTMLDivElement>(null);
   const observer = useRef<IntersectionObserver>(null);
 
   useEffect(() => {
-    if (fetching) return;
+    if (fetching || !hasNextPage) return;
     if (observer.current) observer.current.disconnect();
 
-    const callback: IntersectionObserverCallback = (entries) => {
+    const callback: IntersectionObserverCallback = async (entries) => {
       if (entries[0].isIntersecting && hasNextPage) {
-        loadMore();
+        await loadMore();
       }
     };
     observer.current = new IntersectionObserver(callback, {

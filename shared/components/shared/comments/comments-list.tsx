@@ -61,10 +61,10 @@ export const CommentsList: React.FC<Props> = ({ className, postId, handleLinkCli
     <div className={cn(className)}>
       {comments.map((comment) => (
         <CommentItem
+          key={comment.id}
           handleLinkClick={handleLinkClick}
           isCommentCreator={session?.user.id === comment.authorId}
           {...comment}
-          key={comment.id}
           className='mb-3'
         />
       ))}

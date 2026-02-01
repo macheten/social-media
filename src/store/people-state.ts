@@ -40,7 +40,6 @@ export const usePeopleStore = create<Store>((set) => ({
 
   setNameQuery(nameQuery) {
     set({ nameQuery })
-    console.log(nameQuery)
   },
 
   resetState() {

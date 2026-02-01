@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { cn } from "@shared/lib/utils";
 import { PostItem } from "./post-item";
 import { Loader } from "lucide-react";
@@ -31,9 +31,9 @@ export const PostsList: React.FC<Props> = ({
     handleSetReaction,
   } = usePosts({ userId });
 
-  const loadMore = () => {
-    fetchPosts({ cursor, userId });
-  };
+  const loadMore = useCallback(async () => {
+    await fetchPosts({ cursor, userId });
+  }, [cursor, userId]);
 
   const { endOfPage } = useInfiniteScroll({
     fetching: fetchingPosts,

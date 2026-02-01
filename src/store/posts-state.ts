@@ -80,8 +80,8 @@ export const usePostStore = create<Store>((set) => ({
 
   async addPost(data) {
     try {
-      const { newPost } = await createPost(data);
-      set((state) => ({ posts: [newPost!, ...state.posts] }));
+      const { post } = await createPost(data);
+      set((state) => ({ posts: [post!, ...state.posts] }));
     } catch (error) {
       throw error;
     }

@@ -14,6 +14,7 @@ interface PageProps {
 export default async function ProfilePage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   const { userId } = await searchParams;
+  console.log(userId)
   
   let profileId = null;
   let isProfileOwner = false;
@@ -22,11 +23,11 @@ export default async function ProfilePage({ searchParams }: PageProps) {
     return redirect("/");
   }
 
-  if (session?.user.id && userId) {
+  if (session && userId) {
     profileId = userId;
-    isProfileOwner = session?.user.id === userId ? true : false;
+    isProfileOwner = session.user.id === userId ? true : false;
   } else {
-    profileId = session?.user.id;
+    profileId = session?.user.id || userId;
     isProfileOwner = true;
   }
 

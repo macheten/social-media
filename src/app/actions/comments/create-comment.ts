@@ -10,7 +10,13 @@ export interface CreateCommentProps {
   postId: string;
 }
 
-export async function createComment(data: CreateCommentProps) {
+interface ReturnType {
+  comment: CommentDTO;
+}
+
+export async function createComment(
+  data: CreateCommentProps,
+): Promise<ReturnType> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -21,18 +27,27 @@ export async function createComment(data: CreateCommentProps) {
     data: {
       content: data.content,
       authorId: session.user.id,
-      postId: data.postId
+      postId: data.postId,
     },
 
     include: {
       author: {
         select: {
           username: true,
-          imageUrl: true
-        }
-      }
-    }
+          imageUrl: true,
+        },
+      },
+    },
   });
 
-  return newComment
+  return {
+    comment: {
+      ...newComment,
+      reactions: {
+        dislikes: 0,
+        likes: 0,
+        userReaction: null,
+      },
+    },
+  };
 }

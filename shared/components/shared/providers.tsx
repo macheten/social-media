@@ -6,11 +6,9 @@ import { Toaster } from "react-hot-toast";
 
 export const Providers: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <div>
-      <SessionProvider>
-        <Toaster />
-        {children}
-      </SessionProvider>
-    </div>
+    <SessionProvider>
+      <Toaster />
+      {children}
+    </SessionProvider>
   );
 };
